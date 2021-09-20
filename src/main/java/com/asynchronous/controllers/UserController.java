@@ -1,6 +1,7 @@
 package com.asynchronous.controllers;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,29 +16,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.asynchronous.dao.UserRespository;
 import com.asynchronous.models.User;
+import com.asynchronous.services.UserService;
 
 @RestController
 @RequestMapping
 public class UserController {
 
 	@Autowired
-	UserRespository userRepo;
+	UserService userService;
 
 	@PostMapping
-	public void addUser() {
-		List<User> list = Stream.of(new User(1, "punit", "punit@gmail.com"), new User(2, "soni", "soni@gmail.com"))
-				.collect(Collectors.toList());
-		userRepo.saveAll(list);
+	public CompletableFuture<List<User>> addUser() {
+		 return userService.addUser();
 	}
 
 	@GetMapping
-	public List<User> getUsers() {
-		return userRepo.findAll();
+	public CompletableFuture<List<User>> getUsers() {
+		return userService.getUsers();
 	}
 
 	@GetMapping("/user")
 	public User getUser(@RequestParam int id) {
-		return userRepo.findById(id).get();
+		return userService.getUser(id);
 	}
 
+	@GetMapping("/users")
+	public List<User> getAllUsers() {
+		return userService.getAllUsers();
+	}
 }
